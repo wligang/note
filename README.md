@@ -79,13 +79,15 @@ Major GC/Full GC：老年代GC，指发生在老年代的GC。
 
 ### 5.2 GC算法
 Java堆是被所有线程共享的一块内存区域，所有对象实例和数组都在堆上进行内存分配。为了进行高效的垃圾回收，虚拟机把堆内存划分成新生代（Young Generation）、老年代（Old Generation）和永久代（Permanent Generation）3个区域。
+JVM针对新生代，主要采用复制算。针对老年代，通常采用标记-清除算法或者标记-整理算法来进行回收。
 
-JVM针对新生代，主要采用复制算法；针对老年代，通常采用标记-清除算法或者标记-整理算法来进行回收。
+【复制算法】：新生代由 Eden 与 Survivor Space（S0，S1）构成，Survivor 幸存区是将内存分成大小相等的两块区域，每次使用其中的一块。当这一块的内存用完了，就将还存活的对象复制到另一块区域上，然后对该块进行内存回收。大小通过-Xmn参数指定，Eden 与 Survivor Space 的内存大小比例默认为8:1，可以通过-XX:SurvivorRatio 参数指定，比如新生代为10M 时，Eden分配8M，S0和S1各分配1M
 
-【复制算法】：新生代由 Eden 与 Survivor Space（S0，S1）构成，Survivor 幸存区是将内存分成大小相等的两块区域，每次使用其中的一块。当这一块的内存用完了，就将还存活的对象复制到另一块区域上，然后对该块进行内存回收。大小通过-Xmn参数指定，Eden 与 Survivor Space 的内存大小比例默认为8:1，可以通过-XX:SurvivorRatio 参数指定，比如新生代为10M 时，Eden分配8M，S0和S1各分配1M。
 【标记算法】：老年代对象存活的时间比较长、比较稳定，因此采用**标记**(Mark)算法来进行回收，所谓标记就是扫描出存活的对象，然后再进行回收未被标记的对象，回收后对用空出的空间要么进行合并、要么标记出来便于下次进行分配，**目的就是要减少内存碎片带来的效率损耗**。
 老年代的空间大小即-Xmx 与-Xmn 两个参数之差，用于存放经过几次Minor GC之后依旧存活的对象。当老年代的空间不足时，会触发Major GC/Full GC。
 
+**说明**:事实证明，90%以上的新生代对象存活时间很短暂。使用复制算法实现简单,运行效率高，坏处是每次只能使用一半内存,内存的利用率不高;
+标记整理算法,涉及两个过程,运行效率慢,且整理之后会产生不连续的内存空间
 
 
 ## 6. I/o
@@ -103,7 +105,7 @@ JVM针对新生代，主要采用复制算法；针对老年代，通常采用�
 [Java9新特性](https://www.runoob.com/java/java9-new-features.html)
 
 
-# 二、框架
+# 二、Spring
 ## 1. spring
 ### 1.1spring介绍
  spring的核心是一个轻量级的容器（Container）,它是实现IoC(Inversion of Control)容器和非侵入性（No intrusive）的框架，并提供AOP(Aspect-oriented Programming)的实现方式，提供对持久层（Persistence）、事务（Transcation）的支持;提供MVC Web框架的实现，并对一些常用的企业服务API提供了一致的模型封装，是一个全方位的应用程序框架，除此之外，对现存的各种框架（Structs、JSF、hibernate、Ibatis、Webwork等），Spring也提供了与他们相整合的方案。
@@ -175,6 +177,7 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 **@SpringBootConfiguration**：组合了 @Configuration 注解，实现配置文件的功能。
 **@EnableAutoConfiguration**：打开自动配置的功能，也可以关闭某个自动配置的选项，如关闭数据源自动配置功能： @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })。
 **@ComponentScan**：Spring组件扫描。
+
 [资料](https://www.jianshu.com/p/63ad69c480fe/)
 
 ## 4 mybaties
@@ -186,16 +189,96 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 
 # 三、中间件
 ## 1. MQ
+##  2.RPC
+##  3.JDBC/ODBC
 
 # 四、数据库
+[MySQL|Redis|MongoDB对比](https://blog.csdn.net/szm1234560/article/details/78991577)    &nbsp;&nbsp;  [资料二](https://www.cnblogs.com/java-spring/p/9488227.html)
 ## 1. mysql
 ##  2. oracle
 ##  3. redis
 ##  4. mongodb
-[资料一](https://blog.csdn.net/szm1234560/article/details/78991577)    &nbsp;&nbsp;  [资料二](https://www.cnblogs.com/java-spring/p/9488227.html)
+
+##  5. sql的优化
+###  5.1sql慢查询
+一般指超过指定查询时间的查询称之为慢查询你，导致慢查询的原因有一些几点：
+
+ 1. SQL编写问题
+ 2. 锁
+ 3. 业务实例互相干扰对IO/CPU 资源争用
+ 4. 服务器硬件限制
+ 5. DB本身的BUG（概率小）
+
+```
+		mysql> show variables like "long%";
+		+-----------------+----------+
+		| Variable_name   | Value    |
+		+-----------------+----------+
+		| long_query_time | 0.000100 |
+		+-----------------+----------+
+
+		------设置慢查询时间：
+		mysql> set long_query_time=0.0001;
+		
+		开启慢查询记录设置：
+		mysql> show variables like "slow%";
+		+---------------------+------------------------------------+
+		| Variable_name       | Value                              |
+		+---------------------+------------------------------------+
+		| slow_launch_time    | 2                                  |
+		| slow_query_log      | OFF                                |
+		| slow_query_log_file | /opt/mysql/data/localhost-slow.log |
+		+---------------------+------------------------------------+
+		---slow_query_log 全局变量设置为“ON”状态
+		mysql> set global slow_query_log=ON;
+
+```
+
+###  5.2 Sql的优化方案
+sql的优化方向主要有两方面：索引和操作
+【索引相关规则】索引相关有如下使用的注意事项：
+ 1. 字段类型转换导致不用索引，如字符串类型的不用引号，数字类型的用引号等，这有可能会用不到索引导致全表扫描；
+ 2. mysql 不支持函数转换，所以字段前面不能加函数，否则这将用不到索引；
+ 3. 不要在字段前面加减运算；
+ 4. 字符串比较长的可以考虑索引一部份减少索引文件大小，提高写入效率；
+ 5. like % 在前面用不到索引；
+ 6. 根据联合索引的第二个及以后的字段单独查询用不到索引；
+ 7. 不要使用 select *；
+ 8. 排序请尽量使用升序 ;
+ 9. or 的查询尽量用 union 代替 （Innodb）；
+ 10. 复合索引高选择性的字段排在前面；
+ 11. order by / group by 字段包括在索引当中减少排序，效率会更高。
+
+【操作相关】：
+  1. 尽量规避大事务的 SQL，大事务的 SQL 会影响数据库的并发性能及主从同步；
+  2. 分页语句 limit 的问题；
+  3. 删除表所有记录请用 truncate，不要用 delete；
+  4. 不让 mysql 干多余的事情，如计算；
+  5. 输写 SQL 带字段，以防止后面表变更带来的问题，性能也是比较优的 ( 涉及到数据字典解析，请自行查询资料)；
+  6. 在 Innodb上用 select count(*)，因为 Innodb 会存储统计信息；
+  7. 慎用 Oder by rand()。
 # 五、网络
+##  1 、OSI参考模型
+应用层、表示层、会话层、网络层、传输层、数据链路层、物理层七大部分
 
+##  2、 TCP/UDP
+**TCP**提供IP环境下的数据可靠传输，它提供的服务包括数据流传送、可靠性、有效流控、全双工操作和多路复用。通过面向连接、端到端和可靠的数据包发送。通俗说，它是事先为所发送的数据开辟出连接好的通道，然后再进行数据发送；
+**UDP**则不为IP提供可靠性、流控或差错恢复功能。一般来说，TCP对应的是可靠性要求高的应用，而UDP对应的则是可靠性要求低、传输经济的应用。
+>TCP支持的应用协议主要有：Telnet、FTP、SMTP等；
+UDP支持的应用层协议主要有：NFS（网络文件系统）、SNMP（简单网络管理协议）、DNS（主域名称系统）、TFTP（通用文件传输协议）等。
 
+##  3 、http/https
+### 3.1 http
+http是一个无状态协议，既是对事务没有状态支持。对应的解决方式有cookie等技术
+###  3.2 https
+一、首先HTTP请求服务端生成证书，客户端对证书的有效期、合法性、域名是否与请求的域名一致、证书的公钥（RSA加密）等进行校验；
+二、客户端如果校验通过后，就根据证书的公钥的有效， 生成随机数，随机数使用公钥进行加密（RSA加密）；
+三、消息体产生的后，对它的摘要进行MD5（或者SHA1）算法加密，此时就得到了RSA签名；
+四、发送给服务端，此时只有服务端（RSA私钥）能解密。
+五、解密得到的随机数，再用AES加密，作为密钥（此时的密钥只有客户端和服务端知道）。
+![https通信原理](https://img-blog.csdn.net/20180213114414721)
+HTTPS在HTTP的基础上加入了SSL协议，SSL依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。
+https比http更加适合用来传递比较敏感的信息，如证件信息，密码等等。
 # 六、操作系统
 ##  1. Linux
 
@@ -245,7 +328,27 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 [设计模式资料](https://www.runoob.com/design-pattern/design-pattern-tutorial.html)
 [资料二](https://www.cnblogs.com/yueguanguanyun/p/9584501.html)
 
-# 八、数据结构与算法
- 1. 排序算法
- 2. 递归算法
+# 八、容器
+##  1 web容器
+### 1.1 tomcat、
+	其他的web容器
+	Weblogic
+	JBOSS
+	Coldfusion
+	Websphere
+	GlassFish
+### 1.2 jetty、
+### 1.3 nginx
+##  2 docker
+# 九、算法
+##  1. 排序算法
+##  2. 递归算法
+##  3.查找算法
 
+# 十、数据结构
+##  1.链表
+##  2.数组
+##  3.树
+有个经典的应用HashMap,HashMap的数据结构用到了数组、链表、红黑树
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2019051218143789.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xlZWdvb1dhbmc=,size_16,color_FFFFFF,t_70)
+[HashMap数据结构算法分析](https://blog.csdn.net/lch_2016/article/details/81045480)
