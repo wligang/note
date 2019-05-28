@@ -193,7 +193,7 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 [资料](http://ju.outofmemory.cn/entry/370116)
 
  9. 
- 
+
 
 # 三、中间件
 ## 1. MQ
