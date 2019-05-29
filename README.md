@@ -196,7 +196,7 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 
 
 # 三、中间件
-## 1. MQ
+##  1. MQ
 ##  2.RPC
 ##  3.JDBC/ODBC
 
@@ -212,6 +212,8 @@ Spring Boot 是 Spring 开源组织下的子项目，是 Spring 组件一站式�
 ## 1. mysql
 ##  2. oracle
 ##  3. redis
+### 3.1 redis的应用场景
+    排序、分布式锁
 ##  4. mongodb
 ##  5. sql的优化
 ###  5.1sql慢查询
