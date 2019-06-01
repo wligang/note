@@ -449,3 +449,6 @@ Docker 的镜像提供了除内核外完整的运行时环境，确保了应用�
 使用 Docker 可以通过定制应用镜像来实现持续集成、持续交付、部署。——持续交付和部署
 总结，docker提供了**一致的运行环境、优良的隔离性、弹性部署、可持续交付与部属**
 [docker部署springboot工程](https://blog.csdn.net/LeegooWang/article/details/90703147)
+
+#  十二、分布式事务
+# 十三、幂等
