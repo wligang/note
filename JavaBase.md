@@ -40,3 +40,6 @@ HashMap 是一个散列表，它存储的内容是键值对(key-value)映射。
 继承于HashMap，使用元素的自然顺序对元素进行排序.
 15	IdentityHashMap 
 继承AbstractMap类，比较文档时使用引用相等。
+
+
+
