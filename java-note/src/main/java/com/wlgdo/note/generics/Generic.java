@@ -4,7 +4,7 @@ package com.wlgdo.note.generics;
  * Author: Ligang.Wang[wlgchun@l63.com]
  * Date: 2019/6/21 23:59
  */
-public class GenericMethod {
+public class Generic {
     // 泛型方法 printArray
     public static < E > void printArray( E[] inputArray )
     {
