@@ -1,6 +1,6 @@
 # Java基础值集合
 
-
+## 集合
 序号	类描述
 1	AbstractCollection 
 实现了大部分的集合接口。
@@ -41,5 +41,6 @@ HashMap 是一个散列表，它存储的内容是键值对(key-value)映射。
 15	IdentityHashMap 
 继承AbstractMap类，比较文档时使用引用相等。
 
+## 泛型
 
 
