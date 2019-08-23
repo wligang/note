@@ -1,4 +1,4 @@
-package com.wlgdo.avatar.service.bridge;
+package com.wlgdo.note.bridge;
 
 /**
  * Author: Ligang.Wang[wlgchun@l63.com]

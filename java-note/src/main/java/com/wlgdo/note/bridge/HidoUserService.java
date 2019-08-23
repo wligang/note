@@ -1,4 +1,4 @@
-package com.wlgdo.avatar.service.bridge;
+package com.wlgdo.note.bridge;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
